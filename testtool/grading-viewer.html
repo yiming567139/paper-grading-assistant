@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>试卷打分工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: #fff;
+            padding: 15px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .header h1 {
+            font-size: 18px;
+            color: #333;
+        }
+        .header-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+        .header-btn {
+            padding: 8px 16px;
+            background: #1890ff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .header-btn:hover {
+            background: #40a9ff;
+        }
+        .header-btn.secondary {
+            background: #fff;
+            color: #666;
+            border: 1px solid #d9d9d9;
+        }
+        .header-btn.secondary:hover {
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+
+        /* 设置面板 */
+        .settings-panel {
+            background: #fff;
+            border-bottom: 1px solid #e8e8e8;
+            padding: 15px 20px;
+            display: none;
+        }
+        .settings-panel.show {
+            display: block;
+        }
+        .settings-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        .settings-row:last-child {
+            margin-bottom: 0;
+        }
+        .settings-row label {
+            width: 100px;
+            color: #666;
+            font-size: 14px;
+        }
+        .settings-row input[type="text"] {
+            flex: 1;
+            max-width: 400px;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .settings-row input[type="text"]:focus {
+            border-color: #1890ff;
+            outline: none;
+        }
+        .settings-hint {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+        }
+        .image-container {
+            flex: 1;
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 500px;
+        }
+        .image-container img {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+        .image-container .placeholder {
+            color: #999;
+            font-size: 16px;
+            text-align: center;
+        }
+        .sidebar {
+            width: 200px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .sidebar h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .score-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .score-btn {
+            padding: 12px;
+            border: 2px solid #d9d9d9;
+            background: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        .score-btn:hover {
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+        .score-btn.selected {
+            background: #1890ff;
+            border-color: #1890ff;
+            color: #fff;
+        }
+        .next-btn {
+            margin-top: auto;
+            padding: 15px;
+            background: #52c41a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .next-btn:hover {
+            background: #73d13d;
+        }
+        .prev-btn {
+            padding: 10px;
+            background: #fff;
+            color: #666;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .prev-btn:hover {
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+        .info {
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            text-align: center;
+            color: #666;
+        }
+        .current-score {
+            font-size: 24px;
+            color: #1890ff;
+            text-align: center;
+            padding: 10px;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .nav-buttons .next-btn {
+            flex: 1;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>试卷打分工具</h1>
+        <div class="header-actions">
+            <button class="header-btn secondary" onclick="toggleSettings()">⚙️ 设置</button>
+            <button class="header-btn" onclick="loadFromServer()">从服务器加载</button>
+            <button class="header-btn secondary" onclick="loadLocalFiles()">选择本地文件</button>
+        </div>
+    </div>
+
+    <!-- 设置面板 -->
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-row">
+            <label>服务器地址:</label>
+            <input type="text" id="serverUrl" placeholder="例如: http://192.168.3.51:8081">
+            <span class="settings-hint">HTTP服务器的地址</span>
+        </div>
+        <div class="settings-row">
+            <label>图片路径:</label>
+            <input type="text" id="imagePath" placeholder="例如: screenshots/ 或留空">
+            <span class="settings-hint">图片所在的子目录</span>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="image-container">
+            <span class="placeholder" id="placeholder">
+                请先加载图片<br><br>
+                <small>点击"选择本地文件"或配置服务器地址后点击"从服务器加载"</small>
+            </span>
+            <img id="currentImage" style="display: none;">
+        </div>
+
+        <div class="sidebar">
+            <div>
+                <h3>打分</h3>
+                <div class="score-buttons">
+                    <button class="score-btn" onclick="setScore(0)">0 分</button>
+                    <button class="score-btn" onclick="setScore(1)">1 分</button>
+                    <button class="score-btn" onclick="setScore(2)">2 分</button>
+                    <button class="score-btn" onclick="setScore(3)">3 分</button>
+                    <button class="score-btn" onclick="setScore(4)">4 分</button>
+                    <button class="score-btn" onclick="setScore(5)">5 分</button>
+                </div>
+            </div>
+
+            <div class="current-score" id="currentScore">当前: -</div>
+
+            <div class="nav-buttons">
+                <button class="prev-btn" onclick="prevImage()">← 上一张</button>
+                <button class="next-btn" onclick="nextImage()">下一张 →</button>
+            </div>
+
+            <div class="info">
+                <span id="imageInfo">0 / 0</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let images = [];
+        let currentIndex = 0;
+        let currentScore = null;
+
+        // 加载保存的配置
+        function loadConfig() {
+            const serverUrl = localStorage.getItem('grading_viewer_server_url') || '';
+            const imagePath = localStorage.getItem('grading_viewer_image_path') || '';
+            document.getElementById('serverUrl').value = serverUrl;
+            document.getElementById('imagePath').value = imagePath;
+        }
+
+        // 保存配置
+        function saveConfig() {
+            localStorage.setItem('grading_viewer_server_url', document.getElementById('serverUrl').value);
+            localStorage.setItem('grading_viewer_image_path', document.getElementById('imagePath').value);
+        }
+
+        // 切换设置面板
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            panel.classList.toggle('show');
+        }
+
+        // 从服务器加载图片
+        async function loadFromServer() {
+            saveConfig();
+
+            const serverUrl = document.getElementById('serverUrl').value.trim();
+            const imagePath = document.getElementById('imagePath').value.trim();
+
+            if (!serverUrl) {
+                alert('请先在设置中配置服务器地址');
+                document.getElementById('settingsPanel').classList.add('show');
+                return;
+            }
+
+            try {
+                // 构建目录URL
+                const baseUrl = serverUrl.replace(/\/$/, '');
+                const fullUrl = imagePath ? `${baseUrl}/${imagePath.replace(/^\//, '')}` : baseUrl;
+
+                // 获取目录列表
+                const response = await fetch(fullUrl + '/');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const html = await response.text();
+
+                // 解析HTML获取图片文件
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const links = doc.querySelectorAll('a');
+
+                const supportedFormats = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+                const imageUrls = [];
+
+                links.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href && supportedFormats.some(ext => href.toLowerCase().endsWith(ext))) {
+                        // 处理相对路径
+                        if (href.startsWith('http')) {
+                            imageUrls.push(href);
+                        } else if (href.startsWith('/')) {
+                            imageUrls.push(baseUrl + href);
+                        } else {
+                            imageUrls.push(fullUrl + '/' + href);
+                        }
+                    }
+                });
+
+                if (imageUrls.length === 0) {
+                    alert('未在服务器上找到图片文件');
+                    return;
+                }
+
+                // 按文件名排序
+                imageUrls.sort((a, b) => {
+                    const nameA = a.split('/').pop();
+                    const nameB = b.split('/').pop();
+                    return nameA.localeCompare(nameB, undefined, { numeric: true });
+                });
+
+                images = imageUrls.map(url => ({ url, type: 'remote' }));
+                currentIndex = 0;
+                showImage();
+
+                console.log(`已从服务器加载 ${images.length} 张图片`);
+            } catch (err) {
+                console.error('加载失败:', err);
+                alert(`从服务器加载失败: ${err.message}\n\n请检查:\n1. 服务器地址是否正确\n2. 服务器是否正在运行\n3. 是否有跨域问题`);
+            }
+        }
+
+        // 选择本地文件
+        function loadLocalFiles() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.webkitdirectory = true;
+            input.multiple = true;
+
+            input.onchange = (e) => {
+                const supportedFormats = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+                const files = Array.from(e.target.files)
+                    .filter(f => supportedFormats.some(ext => f.name.toLowerCase().endsWith(ext)))
+                    .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+
+                if (files.length === 0) {
+                    alert('未找到图片文件');
+                    return;
+                }
+
+                images = files.map(file => ({ file, type: 'local' }));
+                currentIndex = 0;
+                showImage();
+            };
+
+            input.click();
+        }
+
+        // 显示当前图片
+        function showImage() {
+            const img = document.getElementById('currentImage');
+            const placeholder = document.getElementById('placeholder');
+            const info = document.getElementById('imageInfo');
+
+            if (images.length === 0) {
+                img.style.display = 'none';
+                placeholder.style.display = 'block';
+                placeholder.innerHTML = '请先加载图片<br><br><small>点击"选择本地文件"或配置服务器地址后点击"从服务器加载"</small>';
+                info.textContent = '0 / 0';
+                return;
+            }
+
+            if (currentIndex >= images.length) {
+                currentIndex = 0;
+            }
+            if (currentIndex < 0) {
+                currentIndex = images.length - 1;
+            }
+
+            const item = images[currentIndex];
+            let url;
+
+            if (item.type === 'remote') {
+                url = item.url;
+            } else {
+                url = URL.createObjectURL(item.file);
+            }
+
+            img.src = url;
+            img.style.display = 'block';
+            placeholder.style.display = 'none';
+            info.textContent = `${currentIndex + 1} / ${images.length}`;
+
+            // 重置打分状态
+            currentScore = null;
+            updateScoreDisplay();
+        }
+
+        // 设置分数
+        function setScore(score) {
+            currentScore = score;
+            updateScoreDisplay();
+            // 打分后自动进入下一张
+            setTimeout(() => nextImage(), 300);
+        }
+
+        // 更新分数显示
+        function updateScoreDisplay() {
+            const scoreDisplay = document.getElementById('currentScore');
+            const buttons = document.querySelectorAll('.score-btn');
+
+            buttons.forEach(btn => btn.classList.remove('selected'));
+
+            if (currentScore !== null) {
+                scoreDisplay.textContent = `当前: ${currentScore} 分`;
+                if (buttons[currentScore]) {
+                    buttons[currentScore].classList.add('selected');
+                }
+            } else {
+                scoreDisplay.textContent = '当前: -';
+            }
+        }
+
+        // 下一张图片
+        function nextImage() {
+            if (images.length === 0) {
+                alert('请先加载图片');
+                return;
+            }
+
+            currentIndex++;
+
+            if (currentIndex >= images.length) {
+                if (confirm('已到达最后一张，是否回到第一张？')) {
+                    currentIndex = 0;
+                } else {
+                    currentIndex = images.length - 1;
+                    return;
+                }
+            }
+
+            showImage();
+        }
+
+        // 上一张图片
+        function prevImage() {
+            if (images.length === 0) {
+                alert('请先加载图片');
+                return;
+            }
+
+            currentIndex--;
+
+            if (currentIndex < 0) {
+                if (confirm('已到达第一张，是否跳到最后一张？')) {
+                    currentIndex = images.length - 1;
+                } else {
+                    currentIndex = 0;
+                    return;
+                }
+            }
+
+            showImage();
+        }
+
+        // 键盘快捷键
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '5') {
+                setScore(parseInt(e.key));
+            } else if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextImage();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevImage();
+            }
+        });
+
+        // 页面加载时加载配置
+        window.onload = loadConfig;
+    </script>
+</body>
+</html>

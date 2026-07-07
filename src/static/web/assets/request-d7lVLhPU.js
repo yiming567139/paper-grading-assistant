@@ -1,0 +1,1 @@
+import{a as n}from"./index-DEjC8UId.js";const r=n.create({baseURL:"/api/v1",timeout:3e4});r.interceptors.request.use(e=>e,e=>Promise.reject(e));r.interceptors.response.use(e=>e.data,e=>Promise.reject(e));const o={get(e,t){return r.get(e,t)},post(e,t,s){return r.post(e,t,s)},put(e,t,s){return r.put(e,t,s)},delete(e,t){return r.delete(e,t)}};export{o as r};

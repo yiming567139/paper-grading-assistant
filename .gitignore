@@ -1,0 +1,30 @@
+# 截图文件夹
+screenshots/
+
+# 日志文件夹
+logs/
+
+# Python缓存
+__pycache__/
+*.pyc
+
+# 测试覆盖率报告
+.coverage
+
+# Web前端
+web/node_modules/
+web/dist/
+web/components.d.ts
+.vite/
+
+# OpenCode 会话续跑临时文件
+.omo/
+
+# Claude 项目配置
+.claude/
+
+# VS Code 配置
+.vscode/
+
+# 内部规划文档
+docs/superpowers/

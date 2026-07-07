@@ -1,0 +1,122 @@
+{
+  "_comment_dify": "Dify服务配置：连接Dify工作流API进行VLM评分",
+  "dify": {
+    "base_url": "http://localhost/v1/workflows/run",
+    "api_key": "",
+    "workflow_id": "",
+    "mock_mode": false,
+    "mock_response": "2",
+    "simulate_click": false,
+    "click_confirm": true
+  },
+  "_comment_http_server": "HTTP服务配置：后端API监听地址和端口",
+  "http_server": {
+    "_comment_port": "后端API服务监听端口，前端通过此端口访问后端",
+    "port": 8081,
+    "_comment_host": "绑定地址，127.0.0.1表示仅本地访问（推荐），0.0.0.0表示监听所有网卡（需配合认证）",
+    "host": "127.0.0.1",
+    "image_base_url": "host.docker.internal"
+  },
+  "_comment_llm": "主LLM配置：用于截图评分",
+  "llm": {
+    "_comment_provider": "模型提供商，如 dashscope、deepseek、openai 等",
+    "provider": "dashscope",
+    "_comment_api_key": "对应提供商的API Key",
+    "api_key": "",
+    "_comment_model": "模型名称，如 qwen-vl-max、deepseek-chat 等",
+    "model": "qwen-vl-max",
+    "_comment_base_url": "自定义API基础地址，留空使用默认",
+    "base_url": "",
+    "_comment_timeout": "API请求超时时间（秒）",
+    "timeout": 30,
+    "_comment_max_retries": "API请求失败时的最大重试次数",
+    "max_retries": 2,
+    "_comment_prompt_template": "评分提示词模板",
+    "prompt_template": ""
+  },
+  "_comment_llm_secondary": "副LLM配置：双评分开关与参数。enabled=true 时启用双评分，同一张截图会由主、副LLM分别评分",
+  "llm_secondary": {
+    "_comment_enabled": "是否启用双评分。false 或缺失该配置块时，仅使用主LLM单评分",
+    "enabled": false,
+    "provider": "deepseek",
+    "api_key": "",
+    "model": "deepseek-chat",
+    "base_url": "",
+    "timeout": 30,
+    "max_retries": 2,
+    "prompt_template": ""
+  },
+  "_comment_region": "屏幕区域和按钮坐标配置：截图区域、分数按钮、清分按钮、确认按钮",
+  "region": {
+    "capture": {
+      "x": 46,
+      "y": 213,
+      "width": 810,
+      "height": 700
+    },
+    "capture_human": {
+      "x1": 0,
+      "y1": 0,
+      "x2": 1920,
+      "y2": 1080
+    },
+    "score_buttons": [
+      {
+        "score": 0,
+        "x": 1043,
+        "y": 565
+      },
+      {
+        "score": 1,
+        "x": 1000,
+        "y": 521
+      },
+      {
+        "score": 2,
+        "x": 1080,
+        "y": 521
+      },
+      {
+        "score": 3,
+        "x": 1160,
+        "y": 521
+      },
+      {
+        "score": 4,
+        "x": 1000,
+        "y": 472
+      },
+      {
+        "score": 5,
+        "x": 1080,
+        "y": 472
+      },
+      {
+        "score": 6,
+        "x": 1160,
+        "y": 472
+      }
+    ],
+    "clear_score": {
+      "enabled": true,
+      "x": 1262,
+      "y": 412
+    },
+    "confirm_button": {
+      "x": 1122,
+      "y": 613
+    }
+  },
+  "_comment_paths": "文件路径配置：截图和日志的保存目录",
+  "paths": {
+    "_comment_screenshots": "截图保存目录（相对项目根目录）",
+    "screenshots": "./screenshots",
+    "_comment_logs": "日志保存目录（相对项目根目录）",
+    "logs": "./logs"
+  },
+  "_comment_window": "窗口配置（仅在使用GUI模式时生效）",
+  "window": {
+    "_comment_always_on_top": "true=GUI窗口始终置顶",
+    "always_on_top": true
+  }
+}

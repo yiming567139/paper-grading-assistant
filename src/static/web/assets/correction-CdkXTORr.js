@@ -1,0 +1,1 @@
+import{r}from"./request-d7lVLhPU.js";const c=(t=1,s=50,o)=>{const e={page:t,page_size:s};return(o==="0"||o==="1")&&(e.consistent=o),r.get("/correction/logs",{params:e})},n=(t=0)=>r.post("/correction/start",{batch_limit:t}),i=()=>r.post("/correction/stop"),u=()=>r.get("/correction/status"),g=t=>r.post("/llm/evaluate",t);export{i as a,u as b,g as e,c as g,n as s};

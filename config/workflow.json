@@ -1,0 +1,61 @@
+{
+  "workflow": {
+    "steps": [
+      {
+        "delay": 0,
+        "enabled": true,
+        "id": "screenshot",
+        "params": {
+          "region": "capture"
+        },
+        "type": "ScreenshotStep"
+      },
+      {
+        "delay": 0.5,
+        "enabled": true,
+        "id": "evaluate",
+        "params": {
+          "mock_result": {
+            "enabled": true,
+            "primary": {
+              "explanation": "234",
+              "score": 2
+            },
+            "secondary": {
+              "explanation": "234",
+              "score": 1
+            }
+          }
+        },
+        "type": "VLMEvalStep"
+      },
+      {
+        "delay": 0.5,
+        "enabled": true,
+        "id": "click_score",
+        "type": "ClickScoreStep"
+      },
+      {
+        "delay": 0.5,
+        "enabled": true,
+        "id": "confirm",
+        "type": "ConfirmStep"
+      },
+      {
+        "delay": 0.5,
+        "enabled": true,
+        "id": "clear",
+        "type": "ClearScoreStep"
+      },
+      {
+        "delay": 0.5,
+        "enabled": true,
+        "id": "wait",
+        "params": {
+          "duration": 2
+        },
+        "type": "WaitStep"
+      }
+    ]
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "automation": {
+    "simulate_click": false
+  },
+  "http_server": {
+    "host": "0.0.0.0",
+    "port": 8081
+  },
+  "llm": {
+    "api_key": "123",
+    "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "max_retries": 2,
+    "model": "qwen3-vl-235b-a22b-thinking",
+    "prompt_template": "这里是系统提示词。",
+    "provider": "dashscope",
+    "timeout": 60
+  },
+  "llm_secondary": {
+    "api_key": "123",
+    "base_url": "https://api.deepseek.com",
+    "enabled": true,
+    "max_retries": 2,
+    "model": "deepseek-vl",
+    "prompt_template": "",
+    "provider": "deepseek",
+    "timeout": 60
+  },
+  "mysql": {
+    "charset": "utf8mb4",
+    "database": "grading_app",
+    "host": "localhost",
+    "password": "123456",
+    "port": 3306,
+    "user": "root"
+  },
+  "paths": {
+    "logs": "./logs",
+    "screenshots": "C:\\down\\frontend-design"
+  },
+  "region": {
+    "capture": {
+      "x1": 50,
+      "x2": 1000,
+      "y1": 50,
+      "y2": 1000
+    },
+    "capture_human": {
+      "x1": 934,
+      "x2": 1521,
+      "y1": 454,
+      "y2": 707
+    },
+    "clear_score": {
+      "enabled": true,
+      "x": 40,
+      "y": 122
+    },
+    "confirm_button": {
+      "x": 943,
+      "y": 865
+    },
+    "score_buttons": [
+      {
+        "score": 0,
+        "x": 338,
+        "y": 645
+      },
+      {
+        "score": 1,
+        "x": 576,
+        "y": 863
+      },
+      {
+        "score": 2,
+        "x": 576,
+        "y": 863
+      },
+      {
+        "score": 3,
+        "x": 576,
+        "y": 863
+      },
+      {
+        "score": 4,
+        "x": 576,
+        "y": 863
+      },
+      {
+        "score": 5,
+        "x": 576,
+        "y": 863
+      },
+      {
+        "score": 6,
+        "x": 576,
+        "y": 863
+      }
+    ]
+  },
+  "window": {
+    "auto_open_browser": true
+  }
+}
